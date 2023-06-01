@@ -250,7 +250,7 @@ export class Tab3Page implements OnInit {
                   action: 'Eliminó un reporte',
                 })
                 .then((res: any) => {
-                  this.getBaches();
+
                 });
                  this.supabaseService.supabase
                 .from('registrosbaches')

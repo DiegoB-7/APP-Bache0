@@ -205,6 +205,7 @@ export class Tab2Page implements OnInit {
                   animated: true,
                   mode: 'ios',
                 }).then(loading => {
+                  loading.present();
                   this.supabaseService.supabase
                   .from('profiles')
                   .delete()
@@ -220,7 +221,9 @@ export class Tab2Page implements OnInit {
                       });
                       await toast.present();
                     this.getUsers();
+                    loading.dismiss();
                   });
+                  loading.dismiss();
                 });
               },
             },
@@ -250,12 +253,13 @@ export class Tab2Page implements OnInit {
         console.log(error);
       } else {
        this.loadingCtrl.create({
-          message: 'Actualizando usuario...',
+          message: 'Editando usuario...',
           spinner: 'crescent',
           animated: true,
           mode: 'ios',
-          duration: 2000,
-      }).then(async (res) => {
+
+      }).then(async (loading) => {
+        loading.present();
         this.getUsers();
         const toast = await this.toastCtrl.create({
           message: 'Usuario editadó correctamente',
@@ -266,6 +270,7 @@ export class Tab2Page implements OnInit {
           duration: 2000,
           });
           await toast.present();
+          loading.dismiss();
       });
       }
     } catch (error) {
@@ -302,7 +307,8 @@ export class Tab2Page implements OnInit {
           spinner: 'crescent',
           animated: true,
           mode: 'ios',
-       }).then(async (res) => {
+       }).then(async (loading) => {
+        loading.present();
         this.getUsers();
         const toast = await this.toastCtrl.create({
           message: 'Usuario creadó correctamente',
@@ -313,7 +319,9 @@ export class Tab2Page implements OnInit {
           duration: 2000,
           });
           await toast.present();
+          this.loadingCtrl.dismiss();
         });
+
 
         console.log('Profile data uploaded successfully:', profile);
       }

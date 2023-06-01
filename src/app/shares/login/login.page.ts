@@ -38,9 +38,12 @@ export class LoginPage implements OnInit {
     let tmp2:any = this.credentials.value.password;
 
     this.loadingCtrl.create({
+
+      animated: true,
+      mode: 'ios',
       message: 'Iniciando sesión...',
       spinner: 'crescent',
-      showBackdrop: true
+
     }).then((loading) => {
       loading.present();
 
