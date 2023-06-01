@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {Router} from '@angular/router';
 import { SupabaseServiceService } from '../shares/services/supabase-service.service';
-import { ModalController, AlertController } from '@ionic/angular';
+import { ModalController, AlertController,LoadingController } from '@ionic/angular';
 @Component({
   selector: 'app-tab5',
   templateUrl: './tab5.page.html',
@@ -12,11 +12,19 @@ export class Tab5Page implements OnInit {
   birthday: Date = new Date(1990, 7, 15);
   location: string = 'New York, USA';
   role: string = 'Administrator';
-  constructor(private alertController:AlertController,private supabaseService:SupabaseServiceService,private router:Router) { }
+  constructor(private alertController:AlertController,private supabaseService:SupabaseServiceService,private router:Router,private loadingCtrl: LoadingController) { }
 
   ngOnInit() {
-
-    this.supabaseService.getSession().then((res:any)=>{
+  }
+ async ionViewWillEnter() {
+  this.loadingCtrl.create({
+    message: 'Cargando...',
+    spinner: 'crescent',
+    animated: true,
+    mode: 'ios',
+  }).then(async loading => {
+    loading.present();
+   await this.supabaseService.getSession().then((res:any)=>{
       if(res.data.session){
         this.supabaseService.supabase.from('profiles').select('*,roles(nombre),municipios(nombre_municipio),estados(nombre_estado)').eq('id',res.data.session.user.id).then((res:any)=>{
           this.name = res.data[0].name + ' ' + res.data[0].f_name + ' ' + res.data[0].m_name;
@@ -34,11 +42,9 @@ export class Tab5Page implements OnInit {
       this.router.navigateByUrl('/login');
     }
     );
-
-
-
-  }
-
+    loading.dismiss();
+  });
+}
   logout(){
     this.alertController.create({
       header: 'Cerrar sesión',

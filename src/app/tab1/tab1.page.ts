@@ -32,23 +32,33 @@ export class Tab1Page implements OnInit {
   }
 
   async ionViewWillEnter(){
-   if(this.chart){
-    this.destroyChart();
-   }
-   await this.createChart();
+   this.loadingCtrl.create({
 
-    Swiper.use([Autoplay, Navigation]);
+      message: 'Cargando...',
+      spinner: 'crescent',
+      animated: true,
+      mode: 'ios',
+    }).then( async loading => {
+      loading.present();
+      if(this.chart){
+        this.destroyChart();
+       }
+       await this.createChart();
 
-    const swiper = new Swiper('.swiper-container', {
-      autoplay: {
-        delay: 3000, // Set the delay between slides in milliseconds
-        disableOnInteraction: false // Continue autoplay even on user interaction
-      },
-      navigation: {
-        nextEl: '.swiper-button-next',
-        prevEl: '.swiper-button-prev'
-      }
-    });
+        Swiper.use([Autoplay, Navigation]);
+
+        const swiper = new Swiper('.swiper-container', {
+          autoplay: {
+            delay: 3000, // Set the delay between slides in milliseconds
+            disableOnInteraction: false // Continue autoplay even on user interaction
+          },
+          navigation: {
+            nextEl: '.swiper-button-next',
+            prevEl: '.swiper-button-prev'
+          }
+        });
+        loading.dismiss();
+      });
   }
     ngOnInit() {
 

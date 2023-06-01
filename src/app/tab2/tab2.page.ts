@@ -2,7 +2,7 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import {
   AlertController,
   LoadingController,
-  ModalController,
+  ModalController,ToastController
 } from '@ionic/angular';
 import { SupabaseServiceService } from '../shares/services/supabase-service.service';
 import { ModalCreateUserComponent } from '../shares/components/modal-create-user/modal-create-user.component';
@@ -20,30 +20,41 @@ export class Tab2Page implements OnInit {
     private router: Router,
     private supabaseService: SupabaseServiceService,
     private modalCtrl: ModalController,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private toastCtrl: ToastController
   ) {}
   user: any;
   usuarios: any = [];
   usuarios_filter: any = [];
   rol: any;
-  ionViewWillEnter() {
-    this.supabaseService.getSession().then((res: any) => {
-      if (res.data.session) {
-        this.supabaseService.supabase
-          .from('profiles')
-          .select(
-            '*,roles(nombre),municipios(nombre_municipio),estados(nombre_estado)'
-          )
-          .eq('id', res.data.session.user.id)
-          .then((res: any) => {
-            this.user = res.data[0];
-          });
-      } else {
-        this.router.navigateByUrl('/login');
-      }
+  async ionViewWillEnter() {
+    this.loadingCtrl.create({
+      message: 'Cargando...',
+      spinner: 'crescent',
+      animated: true,
+      mode: 'ios',
+    }).then(loading => {
+      loading.present();
+      this.supabaseService.getSession().then((res: any) => {
+        if (res.data.session) {
+          this.supabaseService.supabase
+            .from('profiles')
+            .select(
+              '*,roles(nombre),municipios(nombre_municipio),estados(nombre_estado)'
+            )
+            .eq('id', res.data.session.user.id)
+            .then(async (res: any) => {
+              this.user = res.data[0];
+              await this.getUsers();
+      this.cdr.detectChanges();
+      loading.dismiss();
+            });
+        } else {
+          this.router.navigateByUrl('/login');
+        }
+      });
+
     });
-    this.getUsers();
-    this.cdr.detectChanges();
   }
   ngOnInit(): void {}
 
@@ -188,13 +199,29 @@ export class Tab2Page implements OnInit {
             {
               text: 'Aceptar',
               handler: () => {
-                this.supabaseService.supabase
+                this.loadingCtrl.create({
+                  message: 'Eliminando usuario...',
+                  spinner: 'crescent',
+                  animated: true,
+                  mode: 'ios',
+                }).then(loading => {
+                  this.supabaseService.supabase
                   .from('profiles')
                   .delete()
                   .match({ id: id })
-                  .then((res: any) => {
+                  .then(async (res: any) => {
+                    const toast = await this.toastCtrl.create({
+                      message: 'Usuario eliminadó correctamente',
+                      color: 'success',
+                      position: 'top',
+                      animated: true,
+                      mode: 'ios',
+                      duration: 2000,
+                      });
+                      await toast.present();
                     this.getUsers();
                   });
+                });
               },
             },
           ],
@@ -222,8 +249,24 @@ export class Tab2Page implements OnInit {
       if (error) {
         console.log(error);
       } else {
+       this.loadingCtrl.create({
+          message: 'Actualizando usuario...',
+          spinner: 'crescent',
+          animated: true,
+          mode: 'ios',
+          duration: 2000,
+      }).then(async (res) => {
         this.getUsers();
-        console.log('Profile data uploaded successfully:', profile);
+        const toast = await this.toastCtrl.create({
+          message: 'Usuario editadó correctamente',
+          color: 'success',
+          position: 'top',
+          animated: true,
+          mode: 'ios',
+          duration: 2000,
+          });
+          await toast.present();
+      });
       }
     } catch (error) {
       console.error('Error uploading profile data:', error);
@@ -254,7 +297,24 @@ export class Tab2Page implements OnInit {
       if (error) {
         console.error('Error uploading profile data:', error);
       } else {
+       this.loadingCtrl.create({
+          message: 'Creando usuario...',
+          spinner: 'crescent',
+          animated: true,
+          mode: 'ios',
+       }).then(async (res) => {
         this.getUsers();
+        const toast = await this.toastCtrl.create({
+          message: 'Usuario creadó correctamente',
+          color: 'success',
+          position: 'top',
+          animated: true,
+          mode: 'ios',
+          duration: 2000,
+          });
+          await toast.present();
+        });
+
         console.log('Profile data uploaded successfully:', profile);
       }
     } catch (error) {

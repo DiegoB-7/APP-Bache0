@@ -2,7 +2,7 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import {
   AlertController,
   LoadingController,
-  ModalController,
+  ModalController,ToastController
 } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { SupabaseServiceService } from '../shares/services/supabase-service.service';
@@ -24,11 +24,19 @@ export class Tab3Page implements OnInit {
     private supabaseService: SupabaseServiceService,
     private router: Router,
     private cdr: ChangeDetectorRef,
-    private modalCtrl: ModalController
+    private modalCtrl: ModalController,
+    private toastCtrl: ToastController
   ) {}
 
-  ionViewWillEnter() {
-    this.supabaseService
+  async ionViewWillEnter() {
+   this.loadingCtrl.create({
+     message: 'Cargando...',
+     spinner: 'crescent',
+     animated: true,
+     mode: 'ios',
+     }).then(loading => {
+      loading.present();
+      this.supabaseService
       .getSession()
       .then((res: any) => {
         if (res.data.session) {
@@ -38,8 +46,11 @@ export class Tab3Page implements OnInit {
               '*,roles(nombre),municipios(nombre_municipio),estados(nombre_estado)'
             )
             .eq('id', res.data.session.user.id)
-            .then((res: any) => {
+            .then(async (res: any) => {
+              await this.getBaches();
+              this.cdr.detectChanges();
               this.user = res.data[0];
+              loading.dismiss();
             });
         } else {
           this.router.navigateByUrl('/login');
@@ -48,8 +59,8 @@ export class Tab3Page implements OnInit {
       .catch((err) => {
         this.router.navigateByUrl('/login');
       });
-    this.getBaches();
-    this.cdr.detectChanges();
+
+     });
   }
   ngOnInit() {}
   edit(id: any) {
@@ -101,60 +112,80 @@ export class Tab3Page implements OnInit {
   }
   async uploadBache(id: any, data: any) {
     console.log(data);
-    await this.supabaseService.supabase
-      .from('registrosbaches')
-      .upsert({
-        id: id,
-        calle: data.calle,
-        numeroexterior: data.numeroexterior,
-        numerointerior: data.numerointerior,
-        colonia: data.colonia,
-        cp: data.cp,
-        estatusid: data.estatus,
-        comentario: data.comentario,
-      })
-      .then(async (res: any) => {
-        var bache_tmp: any;
-        await this.supabaseService.supabase
-          .from('registrosbaches')
-          .select('*,municipios(nombre_municipio),estados(nombre_estado)')
-          .eq('id', id)
-          .then((res: any) => {
-            bache_tmp = res.data[0];
+    this.loadingCtrl.create(
+      {
+        message: 'Editando reporte...',
+        spinner: 'crescent',
+        animated: true,
+        mode: 'ios',
+      }
+    ).then(async (loading) => {
+     loading.present();
+     await this.supabaseService.supabase
+     .from('registrosbaches')
+     .upsert({
+       id: id,
+       calle: data.calle,
+       numeroexterior: data.numeroexterior,
+       numerointerior: data.numerointerior,
+       colonia: data.colonia,
+       cp: data.cp,
+       estatusid: data.estatus,
+       comentario: data.comentario,
+     })
+     .then(async (res: any) => {
+       var bache_tmp: any;
+       await this.supabaseService.supabase
+         .from('registrosbaches')
+         .select('*,municipios(nombre_municipio),estados(nombre_estado)')
+         .eq('id', id)
+         .then((res: any) => {
+           bache_tmp = res.data[0];
 
-          });
+         });
 
-        this.supabaseService.supabase
-          .from('triggerlog')
-          .insert({
-            user:
-              this.user.id +
-              ' ' +
-              this.user.name +
-              ' ' +
-              this.user.f_name +
-              ' ' +
-              this.user.m_name,
-              report:
-              bache_tmp.calle +
-              ' ' +
-              bache_tmp.colonia +
-              ' ' +
-              bache_tmp.numeroexterior +
-              ' ' +
-              bache_tmp.cp +
-              ' ' +
-              bache_tmp.estados.nombre_estado +
-              ', ' +
-              bache_tmp.municipios.nombre_municipio +
-              ' ' +
-              bache_tmp.fecharegistro,
-            action: 'Editó un reporte',
-          })
-          .then((res: any) => {
-            this.getBaches();
-          });
-      });
+       this.supabaseService.supabase
+         .from('triggerlog')
+         .insert({
+           user:
+             this.user.id +
+             ' ' +
+             this.user.name +
+             ' ' +
+             this.user.f_name +
+             ' ' +
+             this.user.m_name,
+             report:
+             bache_tmp.calle +
+             ' ' +
+             bache_tmp.colonia +
+             ' ' +
+             bache_tmp.numeroexterior +
+             ' ' +
+             bache_tmp.cp +
+             ' ' +
+             bache_tmp.estados.nombre_estado +
+             ', ' +
+             bache_tmp.municipios.nombre_municipio +
+             ' ' +
+             bache_tmp.fecharegistro,
+           action: 'Editó un reporte',
+         })
+         .then(async (res: any) => {
+           const toast = await this.toastCtrl.create({
+             message: 'Reporte editadó correctamente',
+             color: 'success',
+             position: 'top',
+             animated: true,
+             mode: 'ios',
+             duration: 2000,
+             });
+             await toast.present();
+           this.getBaches();
+         });
+     });
+      loading.dismiss();
+    });
   }
   delete(id: any) {
 
@@ -173,7 +204,16 @@ export class Tab3Page implements OnInit {
           {
             text: 'Aceptar',
             handler: async () => {
-              var bache_tmp: any;
+              this.loadingCtrl.create(
+                {
+                  message: 'Eliminando reporte...',
+                  spinner: 'crescent',
+                  animated: true,
+                  mode: 'ios',
+                }
+              ).then(async (loading) => {
+                loading.present();
+                var bache_tmp: any;
               await this.supabaseService.supabase
                 .from('registrosbaches')
                 .select('*,municipios(nombre_municipio),estados(nombre_estado)')
@@ -216,9 +256,20 @@ export class Tab3Page implements OnInit {
                 .from('registrosbaches')
                 .delete()
                 .match({ id: id })
-                .then((res: any) => {
+                .then(async (res: any) => {
+                  const toast = await this.toastCtrl.create({
+                    message: 'Reporte eliminadó correctamente',
+                    color: 'success',
+                    position: 'top',
+                    animated: true,
+                    mode: 'ios',
+                    duration: 2000,
+                    });
+                    await toast.present();
                   this.getBaches();
                 });
+                  loading.dismiss();
+              });
             },
           },
         ],
@@ -314,54 +365,75 @@ export class Tab3Page implements OnInit {
           },
         ])
         .then( async (res: any) => {
-          const { data, error } = await this.supabaseService.supabase
-      .from('registrosbaches')
-      .select('id')
-      .order('id', { ascending: false })
-      .limit(1)
-      .single();
-      if(data){
-        var bache_tmp = data.id;
-      }
+         this.loadingCtrl.create(
+            {
+              message: 'Creando reporte...',
+              spinner: 'crescent',
+              animated: true,
+              mode: 'ios',
+            }
+          ).then(async (loading) => {
+            loading.present();
+            const { data, error } = await this.supabaseService.supabase
+            .from('registrosbaches')
+            .select('id')
+            .order('id', { ascending: false })
+            .limit(1)
+            .single();
+            if(data){
+              var bache_tmp = data.id;
+            }
 
-           await this.supabaseService.supabase
-             .from('registrosbaches')
-             .select('*,municipios(nombre_municipio),estados(nombre_estado)')
-             .eq('id', bache_tmp)
-             .then((res: any) => {
-               bache_tmp = res.data[0];
+                 await this.supabaseService.supabase
+                   .from('registrosbaches')
+                   .select('*,municipios(nombre_municipio),estados(nombre_estado)')
+                   .eq('id', bache_tmp)
+                   .then((res: any) => {
+                     bache_tmp = res.data[0];
 
-             });
-           this.supabaseService.supabase
-             .from('triggerlog')
-             .insert({
-               user:
-                 this.user.id +
-                 ' ' +
-                 this.user.name +
-                 ' ' +
-                 this.user.f_name +
-                 ' ' +
-                 this.user.m_name,
-                 report:
-                 bache_tmp.calle +
-                 ' ' +
-                 bache_tmp.colonia +
-                 ' ' +
-                 bache_tmp.numeroexterior +
-                 ' ' +
-                 bache_tmp.cp +
-                 ' ' +
-                 bache_tmp.estados.nombre_estado +
-                 ', ' +
-                 bache_tmp.municipios.nombre_municipio +
-                 ' ' +
-                 bache_tmp.fecharegistro,
-               action: 'Creó un reporte',
-             })
-             .then((res: any) => {
-               this.getBaches();
-             });
+                   });
+                 this.supabaseService.supabase
+                   .from('triggerlog')
+                   .insert({
+                     user:
+                       this.user.id +
+                       ' ' +
+                       this.user.name +
+                       ' ' +
+                       this.user.f_name +
+                       ' ' +
+                       this.user.m_name,
+                       report:
+                       bache_tmp.calle +
+                       ' ' +
+                       bache_tmp.colonia +
+                       ' ' +
+                       bache_tmp.numeroexterior +
+                       ' ' +
+                       bache_tmp.cp +
+                       ' ' +
+                       bache_tmp.estados.nombre_estado +
+                       ', ' +
+                       bache_tmp.municipios.nombre_municipio +
+                       ' ' +
+                       bache_tmp.fecharegistro,
+                     action: 'Creó un reporte',
+                   })
+                   .then(async (res: any) => {
+                    const toast = await this.toastCtrl.create({
+                      message: 'Reporte creadó correctamente',
+                      color: 'success',
+                      position: 'top',
+                      animated: true,
+                      mode: 'ios',
+                      duration: 2000,
+                      });
+                      await toast.present();
+                     this.getBaches();
+                   });
+                    loading.dismiss();
+                });
+
         });
     }
   }

@@ -13,10 +13,20 @@ export class Tab4Page implements OnInit {
   ngOnInit() {
   }
   async ionViewWillEnter() {
-    await this.supabaseService.supabase.from('triggerlog').select('*').then((res: any) => {
-      this.historial = res.data;
-      console.log(this.historial);
-    }
-    )
+    this.loadingCtrl.create({
+      message: 'Cargando...',
+      spinner: 'crescent',
+      animated: true,
+      mode: 'ios',
+    }).then(async loading => {
+      loading.present();
+      await this.supabaseService.supabase.from('triggerlog').select('*').then((res: any) => {
+        this.historial = res.data;
+        console.log(this.historial);
+      }
+      )
+      loading.dismiss();
+    });
+
   }
 }
