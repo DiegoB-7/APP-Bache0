@@ -1,0 +1,72 @@
+<form [formGroup]="data" (ngSubmit)="save()">
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button color="danger" (click)="cancel()" [strong]="true">Cancelar</ion-button>
+    </ion-buttons>
+    <ion-title style="text-align: center;">Registrar usuario</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="confirm()" [strong]="true" color="success" [disabled]="!data.valid">Confirmar</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+<ion-content class="ion-padding" [fullscreen]="true">
+ <ion-list>
+  <ion-item>
+    <ion-label position="floating">Nombre</ion-label>
+    <ion-input type="text" formControlName="name"></ion-input>
+    <ion-note slot="error" *ngIf="(name.dirty || name.touched) && name.errors">Por favor ingresa un nombre</ion-note>
+  </ion-item>
+  <ion-item>
+    <ion-label position="floating">Apellido paterno</ion-label>
+    <ion-input type="text" formControlName="f_name"></ion-input>
+    <ion-note slot="error" *ngIf="(f_name.dirty || f_name.touched) && f_name.errors">Por favor ingresa un apellido</ion-note>
+  </ion-item>
+  <ion-item>
+    <ion-label position="floating">Apellido materno</ion-label>
+    <ion-input type="text" formControlName="m_name"></ion-input>
+    <ion-note slot="error" *ngIf="(m_name.dirty || m_name.touched) && m_name.errors">Por favor ingresa un apellido</ion-note>
+  </ion-item>
+  <ion-item>
+    <ion-label position="floating">Correo</ion-label>
+    <ion-input type="email" formControlName="email"></ion-input>
+    <ion-note slot="error" *ngIf="(email.dirty || email.touched) && email.errors">Por favor ingresa un correo</ion-note>
+  </ion-item>
+  <ion-item>
+    <ion-label position="floating">Contraseña</ion-label>
+    <ion-input type="password" formControlName="password"></ion-input>
+    <ion-note slot="error" *ngIf="(password.dirty || password.touched) && password.errors">Por favor ingresa una contraseña</ion-note>
+  </ion-item>
+  <ion-item>
+    <ion-label position="floating">Confirmar contraseña</ion-label>
+    <ion-input type="password" formControlName="confirmPassword"></ion-input>
+    <ion-note slot="error" *ngIf="confirmPassword !== password && confirmPassword.dirty && password.dirty">Las contraseñas no coinciden </ion-note>
+    <ion-note slot="error" *ngIf="(confirmPassword.dirty || confirmPassword.touched) && confirmPassword.errors">Por favor confirma la contraseña</ion-note>
+
+  </ion-item>
+  <ion-item>
+    <ion-label>¿Es administrador?</ion-label>
+    <ion-checkbox formControlName="rol"></ion-checkbox>
+  </ion-item>
+  <ion-item>
+    <ion-label>Estado</ion-label>
+    <ion-select formControlName="estado"  (ionChange)="handleChange($event)">
+      <ion-select-option *ngFor="let estado of estados" [value]="estado.id">{{estado.nombre_estado}}</ion-select-option>
+    </ion-select>
+  </ion-item>
+  <ion-item>
+    <ion-label>Municipio</ion-label>
+    <ion-select formControlName="municipio"   >
+      <ion-select-option *ngFor="let municipio of municipios" [value]="municipio.id">{{municipio.nombre_municipio}}</ion-select-option>
+    </ion-select>
+  </ion-item>
+ <ion-item>
+  <ion-label>Fecha de nacimiento</ion-label>
+  <ion-datetime formControlName="fecha" presentation="date"></ion-datetime>
+</ion-item>
+
+
+
+ </ion-list>
+</ion-content>
+</form>

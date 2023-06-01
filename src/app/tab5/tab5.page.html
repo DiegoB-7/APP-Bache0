@@ -1,0 +1,32 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title><p style="text-align: center;" >Perfil</p></ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+  <ion-grid class="ion-align-items-stretch ion-justify-content-center">
+    <ion-row class="ion-align-items-center ion-justify-content-center">
+      <ion-col size="4" size-md="4" size-lg="4">
+        <!-- Profile information -->
+        <ion-card>
+          <ion-card-content class="ion-text-center">
+            <ion-img src="https://ionicframework.com/docs/img/demos/avatar.svg" class="profile-image"></ion-img>
+            <h2 class="profile-name"><strong>Nombre</strong>{{ name }}</h2>
+            <p class="profile-info"><strong>Fecha de nacimiento</strong> {{ birthday | date:'dd/MM/yyyy' }}</p>
+            <p class="profile-info"><strong>Ubicación</strong> {{ location }}</p>
+            <p class="profile-info"><strong>Rol</strong> {{ role }}</p>
+          </ion-card-content>
+        </ion-card>
+
+        <!-- Edit and Logout buttons -->
+        <ion-row class="ion-justify-content-center ion-margin-top">
+
+          <ion-col size="auto">
+            <ion-button expand="full" color="danger" (click)="logout()">Cerrar sesíon</ion-button>
+          </ion-col>
+        </ion-row>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>

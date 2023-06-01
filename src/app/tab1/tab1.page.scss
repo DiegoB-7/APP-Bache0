@@ -1,0 +1,49 @@
+.swiper-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+.swiper-slide {
+  display: flex;
+  cursor: auto;
+  align-items: center;
+  justify-content: center;
+}
+
+ion-avatar {
+  --border-radius: 4px;
+}
+
+.chart-container{
+  width: 20%;
+  height: 20%;
+
+}
+.chart-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 10px;
+}
+
+.swiper-button-next,
+.swiper-button-prev {
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.swiper-card-content {
+  padding: 0;
+  margin: 0;
+  height: 100%;
+}
+
+.flex-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}

@@ -1,0 +1,40 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>
+      <p style="text-align: center;" > Iniciar sesión</p>
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="login-page">
+  <ion-card class="login-card">
+    <!-- <img src="ruta_de_la_imagen" alt="Imagen" class="login-image"> -->
+    <ion-card-content>
+      <form [formGroup]="credentials" (ngSubmit)="login()">
+        <ion-item>
+          <ion-label position="floating">Correo electrónico</ion-label>
+          <ion-input type="email" formControlName="email" inputmode="email"></ion-input>
+          <ion-note slot="error" *ngIf="(email.dirty || email.touched) && email.errors"
+            >Por favor ingresa un correo electrónico</ion-note
+          >
+        </ion-item>
+        <ion-item>
+          <ion-label position="floating">Contraseña</ion-label>
+          <ion-input type="password" formControlName="password"></ion-input>
+          <ion-note slot="error" *ngIf="(password.dirty || password.touched) && password.errors"
+          >Por favor ingresa una contraseña</ion-note
+        >
+        </ion-item>
+        <ion-button expand="block" type="submit" [disabled]="!credentials.valid">Iniciar sesión</ion-button>
+      </form>
+
+    </ion-card-content>
+  </ion-card>
+
+</ion-content>
+
+
+
+
+
+
