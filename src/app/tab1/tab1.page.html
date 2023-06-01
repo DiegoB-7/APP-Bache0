@@ -11,7 +11,7 @@
   <div class="chart-row">
     <ion-card color="dark" class="chart-container">
       <ion-card-header>
-        <p style="text-align: center;" >Reportes arreglados</p>
+        <h2 style="text-align: center; font-weight: bold;" >Reportes por estatus</h2>
       </ion-card-header>
       <ion-card-content>
 
@@ -21,7 +21,7 @@
     </ion-card>
     <ion-card color="dark" class="chart-container">
       <ion-card-header>
-        <p style="text-align: center;" >Reportes sin arreglar</p>
+        <h2 style="text-align: center; font-weight: bold;" >Reportes por usuario</h2>
       </ion-card-header>
       <ion-card-content>
 
@@ -31,7 +31,7 @@
     </ion-card>
     <ion-card color="dark" class="chart-container">
       <ion-card-header>
-        <p style="text-align: center;" >Registro de reportes</p>
+        <h2 style="text-align: center; font-weight: bold;" >Diferencia por estatus</h2>
       </ion-card-header>
       <ion-card-content>
           <canvas  id="MyChart2" >{{ chart2 }}</canvas>
@@ -46,15 +46,42 @@
     <ion-card-content class="swiper-card-content">
       <div class="swiper-container">
         <div class="swiper-wrapper">
-          <div class="swiper-slide">Slide 1</div>
-          <div class="swiper-slide">Slide 2</div>
-          <div class="swiper-slide">Slide 3</div>
+          <div class="swiper-slide" *ngFor="let report of reportes">
+            <ion-card color="dark" class="custom-card">
+              <ion-card-content>
+                <ion-item color="dark" lines="none">
+                  <div class="flex-container">
+                    <div>
+                      <ion-label>{{report.colonia + ' ' + report.calle + ' ' + report.numeroexterior + ' #' + report.cp}}</ion-label>
+                    </div>
+                    <div>
+                      <ion-label>{{report.estados.nombre_estado}}, {{report.municipios.nombre_municipio}}</ion-label>
+                    </div>
+                    <div>
+                      <div *ngIf="report.estatusid === 1">
+                        <ion-badge color="success">Arreglado</ion-badge>
+                      </div>
+                      <div *ngIf="report.estatusid === 2">
+                        <ion-badge color="danger">Sin arreglar</ion-badge>
+                      </div>
+                    </div>
+
+                  </div>
+                </ion-item>
+                <ion-buttons slot="end">
+                  <ion-button fill="clear" (click)="goReportes()" class="ver-mas-button">Ver mas</ion-button>
+                </ion-buttons>
+              </ion-card-content>
+            </ion-card>
+          </div>
         </div>
         <div class="swiper-button-next"></div>
         <div class="swiper-button-prev"></div>
       </div>
     </ion-card-content>
   </ion-card>
+
+
 
   <ion-card>
     <ion-card-header>
@@ -63,57 +90,37 @@
     <ion-card-content class="swiper-card-content">
       <div class="swiper-container">
         <div class="swiper-wrapper">
-          <div class="swiper-slide">
-            <ion-card color="dark">
+          <div class="swiper-slide" *ngFor="let user of users">
+            <ion-card color="dark" class="custom-card">
               <ion-card-content>
                 <ion-item color="dark" lines="none">
-                  <ion-avatar slot="start">
+                  <ion-avatar slot="start" class="custom-avatar">
                     <img alt="Silhouette of a person's head" src="https://ionicframework.com/docs/img/demos/avatar.svg" />
                   </ion-avatar>
                   <div class="flex-container">
                     <div>
-                      <ion-label>Diego Beltran Lopez</ion-label>
+                      <ion-label>{{user.name + ' ' + user.f_name + ' ' + user.m_name}}</ion-label>
                     </div>
                     <div>
-                      <ion-label>Empleado</ion-label>
+                      <ion-label>{{user.roles.nombre}}</ion-label>
                     </div>
                     <div>
-                      <ion-label><p>Ha registrado <strong>500</strong> reportes</p></ion-label>
+                      <ion-label><p>Ha registrado <strong>{{user.registros}}</strong> reportes</p></ion-label>
                     </div>
                   </div>
-                </ion-item>
-              </ion-card-content>
-            </ion-card>
-          </div>
-          <div class="swiper-slide">
-            <ion-card color="dark">
-              <ion-card-content>
-                <ion-item color="dark" lines="none">
-                  <ion-avatar slot="start">
-                    <img alt="Silhouette of a person's head" src="https://ionicframework.com/docs/img/demos/avatar.svg" />
-                  </ion-avatar>
-                  <ion-label>Alexander Roman</ion-label>
-                </ion-item>
-              </ion-card-content>
-            </ion-card>
-          </div>
-          <div class="swiper-slide">
-            <ion-card color="dark">
-              <ion-card-content>
-                <ion-item color="dark" lines="none">
-                  <ion-avatar slot="start">
-                    <img alt="Silhouette of a person's head" src="https://ionicframework.com/docs/img/demos/avatar.svg" />
-                  </ion-avatar>
-                  <ion-label>Samuel Castro</ion-label>
-                </ion-item>
-              </ion-card-content>
-            </ion-card>
-          </div>
 
+                </ion-item>
+                <ion-buttons slot="end">
+                  <ion-button fill="clear" (click)="goUsers()" class="ver-mas-button">Ver mas</ion-button>
+                </ion-buttons>
+              </ion-card-content>
+            </ion-card>
+          </div>
         </div>
         <div class="swiper-button-next"></div>
         <div class="swiper-button-prev"></div>
       </div>
     </ion-card-content>
   </ion-card>
+
 </ion-content>

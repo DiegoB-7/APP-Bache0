@@ -1,0 +1,26 @@
+.filter-col {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 16px;
+}
+
+.filter-col ion-card {
+  max-width: 400px;
+}
+
+.filter-select,
+.filter-searchbar {
+  width: 100%;
+}
+
+.user-col {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.user-col ion-text {
+  width: 100%;
+  white-space: normal;
+}

@@ -1,7 +1,9 @@
 import { AfterViewInit, Component, ElementRef, ViewChild,OnInit } from '@angular/core';
 import Chart from 'chart.js/auto';
+import { Router } from '@angular/router';
 import Swiper, { Autoplay, Navigation } from 'swiper';
 import { AlertController,LoadingController } from '@ionic/angular';
+import { SupabaseServiceService } from '../shares/services/supabase-service.service';
 @Component({
   selector: 'app-tab1',
   templateUrl: 'tab1.page.html',
@@ -12,8 +14,15 @@ export class Tab1Page implements OnInit {
   public chart: any;
   public chart1: any;
   public chart2: any;
-  constructor(private loadingCtrl: LoadingController) {}
-
+  public users:any =[];
+  public reportes:any =[];
+  constructor(private loadingCtrl: LoadingController,private supabase:SupabaseServiceService,private router:Router) {}
+  goUsers(){
+    this.router.navigateByUrl('/tabs/tab2');
+  }
+  goReportes(){
+    this.router.navigateByUrl('/tabs/tab3');
+  }
   async presentLoading() {
 
   }
@@ -22,8 +31,11 @@ export class Tab1Page implements OnInit {
     await this.loadingCtrl.dismiss();
   }
 
-    ngOnInit() {
-    this.createChart();
+  async ionViewWillEnter(){
+   if(this.chart){
+    this.destroyChart();
+   }
+   await this.createChart();
 
     Swiper.use([Autoplay, Navigation]);
 
@@ -37,31 +49,62 @@ export class Tab1Page implements OnInit {
         prevEl: '.swiper-button-prev'
       }
     });
+  }
+    ngOnInit() {
+
 
   }
 
+destroyChart(){
+  this.chart.destroy();
+  this.chart1.destroy();
+  this.chart2.destroy();
+}
+  async createChart(){
 
-  createChart(){
+    let arreglados:any ;
+    let sin_arregar:any ;
+    let users:any;
+    await this.supabase.supabase.from('registrosbaches').select('*,municipios(nombre_municipio),estados(nombre_estado)', { count: 'exact' }).then((res:any)=>{
+      this.reportes = res.data;
+      console.log(this.reportes);
+    });
+    await this.supabase.supabase.from('registrosbaches').select('*', { count: 'exact' }).eq('estatusid',1).then((res:any)=>{
+      arreglados = res.data.length;
+
+    });
+    await this.supabase.supabase.from('registrosbaches').select('*', { count: 'exact' }).eq('estatusid',2).then((res:any)=>{
+      sin_arregar = res.data.length;
+    });
+    await this.supabase.supabase.from('profiles').select('*,roles(nombre)').then((res:any)=>{
+      users = res.data;
+    });
+    for(let i = 0; i < users.length; i++){
+      await this.supabase.supabase.from('registrosbaches').select('*', { count: 'exact' }).eq('id_usuario',users[i].id).then((res:any)=>{
+        users[i].registros = res.data.length;
+      });
+    }
+    this.users = users;
+    console.log(users);
 
     this.chart = new Chart("MyChart", {
-      type: 'bar', //this denotes tha type of chart
-
+      type: 'pie', //this denotes tha type of chart
       data: {// values on X-Axis
-        labels: ['2022-05-10', '2022-05-11', '2022-05-12','2022-05-13',
-								 '2022-05-14', '2022-05-15', '2022-05-16','2022-05-17', ],
-	       datasets: [
+
+        datasets: [
           {
-            label: "Sales",
-            data: ['467','576', '572', '79', '92',
-								 '574', '573', '576'],
+            label: "Arreglados",
+            data: [arreglados],
             backgroundColor: 'blue'
           },
           {
-            label: "Profit",
-            data: ['542', '542', '536', '327', '17',
-									 '0.00', '538', '541'],
+            label: "Sin arreglar",
+            data: [sin_arregar],
             backgroundColor: 'limegreen'
           }
+
+
+
         ]
       },
       options: {
@@ -69,63 +112,44 @@ export class Tab1Page implements OnInit {
         maintainAspectRatio: false,
         aspectRatio:2.5
       }
-
     });
+    let names: any = users.map((user: any) => user.name + ' ' + user.f_name + ' ' + user.m_name);
+    let registros: any = users.map((user: any) => user.registros);
 
-    this.chart1 = new Chart("MyChart1", {
-      type: 'bar', //this denotes tha type of chart
-
-      data: {// values on X-Axis
-        labels: ['2022-05-10', '2022-05-11', '2022-05-12','2022-05-13',
-								 '2022-05-14', '2022-05-15', '2022-05-16','2022-05-17', ],
-	       datasets: [
-          {
-            label: "Sales",
-            data: ['467','576', '572', '79', '92',
-								 '574', '573', '576'],
-            backgroundColor: 'blue'
-          },
-          {
-            label: "Profit",
-            data: ['542', '542', '536', '327', '17',
-									 '0.00', '538', '541'],
-            backgroundColor: 'limegreen'
-          }
-        ]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        aspectRatio:2.5
-      }
-
-    });
+this.chart1 = new Chart("MyChart1", {
+  type: 'bar',
+  data: {
+    labels: names,
+    datasets: [{
+      label: 'Registros',
+      data: registros,
+      backgroundColor: 'blue'
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    aspectRatio: 2.5
+  }
+});
 
     this.chart2 = new Chart("MyChart2", {
       type: 'bar', //this denotes tha type of chart
 
-      data: {// values on X-Axis
-        labels: ['2022-05-10', '2022-05-11', '2022-05-12','2022-05-13',
-								 '2022-05-14', '2022-05-15', '2022-05-16','2022-05-17', ],
-	       datasets: [
+      data:{
+        labels: ['Reportes'],
+        datasets: [
           {
-            label: "Sales",
-            data: ['467','576', '572', '79', '92',
-								 '574', '573', '576'],
+            label: "Arreglados",
+            data: [arreglados],
             backgroundColor: 'blue'
           },
           {
-            label: "Profit",
-            data: ['542', '542', '536', '327', '17',
-									 '0.00', '538', '541'],
+            label: "Sin arreglar",
+            data: [sin_arregar],
             backgroundColor: 'limegreen'
           }
         ]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        aspectRatio:2.5
       }
 
     });

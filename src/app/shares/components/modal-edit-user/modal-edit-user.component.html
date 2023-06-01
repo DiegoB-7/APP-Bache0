@@ -1,0 +1,40 @@
+<form [formGroup]="data" (ngSubmit)="save()">
+  <ion-header>
+    <ion-toolbar>
+      <ion-buttons slot="start">
+        <ion-button color="danger" (click)="cancel()" [strong]="true">Cancelar</ion-button>
+      </ion-buttons>
+      <ion-title style="text-align: center;">Editar usuario</ion-title>
+      <ion-buttons slot="end">
+        <ion-button (click)="confirm()" [strong]="true" color="success" [disabled]="!data.valid">Confirmar</ion-button>
+      </ion-buttons>
+    </ion-toolbar>
+  </ion-header>
+  <ion-content class="ion-padding" [fullscreen]="true">
+   <ion-list>
+    <ion-item>
+      <ion-label position="floating">Nombre</ion-label>
+      <ion-input type="text" formControlName="name"></ion-input>
+      <ion-note slot="error" *ngIf="(name.dirty || name.touched) && name.errors">Por favor ingresa un nombre</ion-note>
+    </ion-item>
+    <ion-item>
+      <ion-label position="floating">Apellido paterno</ion-label>
+      <ion-input type="text" formControlName="f_name"></ion-input>
+      <ion-note slot="error" *ngIf="(f_name.dirty || f_name.touched) && f_name.errors">Por favor ingresa un apellido</ion-note>
+    </ion-item>
+    <ion-item>
+      <ion-label position="floating">Apellido materno</ion-label>
+      <ion-input type="text" formControlName="m_name"></ion-input>
+      <ion-note slot="error" *ngIf="(m_name.dirty || m_name.touched) && m_name.errors">Por favor ingresa un apellido</ion-note>
+    </ion-item>
+    <ion-item>
+      <ion-label>¿Es administrador?</ion-label>
+      <ion-checkbox formControlName="rol"></ion-checkbox>
+    </ion-item>
+
+
+
+
+   </ion-list>
+  </ion-content>
+  </form>

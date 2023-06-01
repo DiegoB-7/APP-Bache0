@@ -53,12 +53,13 @@ export class SupabaseServiceService {
       password,
     })
   }
-   signUp(email: string,password:string) {
-
-    return this.supabase.auth.signUp({
+  async signUp(email: string,password:string) {
+    const {data,error} = await this.supabase.auth.signUp({
       email,
       password,
     })
+
+    return  data;
   }
 
   signOut() {

@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import {FormBuilder,FormControl,Validators,FormArray} from '@angular/forms';
 import { SupabaseServiceService } from '../../services/supabase-service.service';
 import { ModalController } from '@ionic/angular';
+
+
 @Component({
   selector: 'app-modal-create-user',
   templateUrl: './modal-create-user.component.html',
@@ -23,7 +25,10 @@ export class ModalCreateUserComponent  implements OnInit {
     fecha: ['',[Validators.required]],
   });
 
-  constructor(private fb: FormBuilder,private modalCtrl: ModalController,private supabase:SupabaseServiceService) { }
+  constructor(private fb: FormBuilder,private modalCtrl: ModalController,private supabase:SupabaseServiceService) {
+
+
+  }
   get email() {
     return this.data.controls.email;
   }

@@ -1,0 +1,65 @@
+<form [formGroup]="data" (ngSubmit)="save()">
+  <ion-header>
+    <ion-toolbar>
+      <ion-buttons slot="start">
+        <ion-button color="danger" (click)="cancel()" [strong]="true">Cancelar</ion-button>
+      </ion-buttons>
+      <ion-title style="text-align: center;">Crear reporte</ion-title>
+      <ion-buttons slot="end">
+        <ion-button (click)="confirm()" [strong]="true" color="success" [disabled]="!data.valid">Confirmar</ion-button>
+      </ion-buttons>
+    </ion-toolbar>
+  </ion-header>
+  <ion-content class="ion-padding" [fullscreen]="true">
+   <ion-list>
+    <ion-item>
+      <ion-label position="floating">Colonia</ion-label>
+      <ion-input type="text" formControlName="colonia"></ion-input>
+      <ion-note slot="error" *ngIf="(colonia.dirty || colonia.touched) && colonia.errors">Por favor ingresa una colonia</ion-note>
+    </ion-item>
+    <ion-item>
+      <ion-label position="floating">Calle</ion-label>
+      <ion-input type="text" formControlName="calle"></ion-input>
+      <ion-note slot="error" *ngIf="(calle.dirty || calle.touched) && calle.errors">Por favor ingresa una calle</ion-note>
+    </ion-item>
+    <ion-item>
+      <ion-label position="floating">Numero exterior</ion-label>
+      <ion-input type="text" formControlName="numeroexterior"></ion-input>
+      <ion-note slot="error" *ngIf="(numeroexterior.dirty || numeroexterior.touched) && numeroexterior.errors">Por favor ingresa un numero exterior</ion-note>
+    </ion-item>
+    <ion-item>
+      <ion-label position="floating">Numero interior</ion-label>
+      <ion-input type="email" formControlName="numerointerior"></ion-input>
+
+    </ion-item>
+    <ion-item>
+      <ion-label>Estado</ion-label>
+      <ion-select formControlName="estado"  (ionChange)="handleChange($event)">
+        <ion-select-option *ngFor="let estado of estados" [value]="estado.id">{{estado.nombre_estado}}</ion-select-option>
+      </ion-select>
+    </ion-item>
+    <ion-item>
+      <ion-label>Municipio</ion-label>
+      <ion-select formControlName="municipio"   >
+        <ion-select-option *ngFor="let municipio of municipios" [value]="municipio.id">{{municipio.nombre_municipio}}</ion-select-option>
+      </ion-select>
+    </ion-item>
+    <ion-item>
+      <ion-label position="floating">Codigo postal</ion-label>
+      <ion-input type="email" formControlName="cp"></ion-input>
+      <ion-note slot="error" *ngIf="(cp.dirty || cp.touched) && cp.errors">Por favor ingresa un codigo postal</ion-note>
+    </ion-item>
+    <ion-item>
+      <ion-textarea label="Comentario" labelPlacement="floating"  placeholder="..." formControlName="comentario"></ion-textarea>
+    </ion-item>
+   <ion-item>
+
+    <ion-label>Fecha de registro</ion-label>
+    <ion-datetime formControlName="fecha" presentation="date"></ion-datetime>
+  </ion-item>
+
+
+
+   </ion-list>
+  </ion-content>
+  </form>
